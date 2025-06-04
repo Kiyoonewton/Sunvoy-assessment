@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import axios from 'axios';
 import fs from 'fs/promises';
-import { checkCookieValidity, getToken, makeSettingsRequest } from './helper';
+import { checkCookieValidity, getToken, makeSettingsRequest } from './helper.js';
 
 //function to get the users api and write to file
 async function getUsers() {
