@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import axios from 'axios';
+import fs from 'fs/promises';
 
 const password = process.env.SUNVOY_PASSWORD || '';
 const username = process.env.SUNVOY_USERNAME || '';
@@ -35,10 +36,35 @@ async function getAuthenticationToken() {
             }
         );
 
-        console.log('Response headers:', response.headers['set-cookie']);
+        return response.headers['set-cookie']?.map(cookie => cookie.split(';')[0]).join('; ');
     } catch (error) {
         console.error('Error:', error);
+        return null;
     }
 }
 
-getAuthenticationToken();
+//function to get the users api and write to file
+async function getUsers() {
+    try {
+        const response = await axios.post('https://challenge.sunvoy.com/api/users',
+            {},
+            {
+                headers: {
+                    'Cookie': await getAuthenticationToken(),
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }
+        );
+        
+        // Write the users data to users.json file
+        await fs.writeFile('users.json', JSON.stringify(response.data, null, 2));
+        
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return null;
+    }
+}
+
+getUsers();
