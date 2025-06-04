@@ -43,7 +43,6 @@ async function getAutheticatedUserData(retryCount = 0) {
         await fs.writeFile('users.json', JSON.stringify(updatedUsers, null, 2));
     } catch (error: any) {
         if (error.response?.data?.error === 'Request timestamp too old or too far in future' && retryCount < maxRetries) {
-            console.log('Token expired, refreshing token and retrying...', error.response);
             await getToken();
 
             return await getAutheticatedUserData(retryCount + 1);
