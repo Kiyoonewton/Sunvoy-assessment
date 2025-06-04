@@ -35,32 +35,34 @@ async function getAuthenticationToken() {
                 }
             }
         );
-
-        return response.headers['set-cookie']?.map(cookie => cookie.split(';')[0]).join('; ');
+        await fs.writeFile('cookie_config.json', JSON.stringify(response.headers['set-cookie'], null, 2));
+        // return response.headers['set-cookie']?.map(cookie => cookie.split(';')[0]).join('; ');
     } catch (error) {
         console.error('Error:', error);
         return null;
     }
 }
 
+// getAuthenticationToken();
+
 //function to get the users api and write to file
 async function getUsers() {
     try {
+        const data = await fs.readFile('cookie_config.json', 'utf8');
+        const cookie = (JSON.parse(data) as string[])?.map((cookie: string) => cookie.split(';')[0]).join('; ');
         const response = await axios.post('https://challenge.sunvoy.com/api/users',
             {},
             {
                 headers: {
-                    'Cookie': await getAuthenticationToken(),
+                    'Cookie': cookie,
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 }
             }
         );
-        
-        // Write the users data to users.json file
         await fs.writeFile('users.json', JSON.stringify(response.data, null, 2));
-        
-        return response.data;
+
+        // return response.data;
     } catch (error) {
         console.error('Error fetching users:', error);
         return null;
