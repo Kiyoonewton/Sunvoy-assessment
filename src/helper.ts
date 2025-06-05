@@ -94,7 +94,6 @@ export async function checkCookieValidity(): Promise<string | null> {
             return newCookie;
         }
     } catch (error) {
-        console.log('Cookie validation failed, getting new authentication token');
         const newCookie = await getAuthenticationToken();
         return newCookie;
     }
